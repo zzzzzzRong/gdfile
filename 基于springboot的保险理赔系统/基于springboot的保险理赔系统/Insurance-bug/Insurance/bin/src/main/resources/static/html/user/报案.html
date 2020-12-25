@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/jquery-3.4.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../js/data.js"></script>
+    <script src="../../js/province.js"></script>
+    <script src="../../js/session.js"></script>
+</head>
+<body>
+<div style="width: 70%;height: 70%;margin: auto">
+    <p style="text-align: center;font-size: 39px;color: #01AAED">骗保、套保等行为将会依法追究刑事责任</p>
+    <p id="font" style="display:none;;text-align: center;font-size: 39px;color: #01AAED">您已提交报案信息，请查看进度</p>
+
+    <form lay-filter="formTest" class="layui-form layui-form-pane" id="form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">报案人:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="userName" required lay-verify="required" placeholder="请输入 "
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">请填写真实姓名</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话：</label>
+            <div class="layui-input-block">
+                <input type="text" name="userPhone" required lay-verify="required" placeholder="请输入 " autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出险日期：</label>
+            <div class="layui-inline">
+                <input type="text" name="accidentTime" class="layui-input" id="test1">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><a style="color: red">* </a>选择地区</label>
+            <div class="layui-input-inline">
+                <select name="provid" id="provid" lay-filter="provid">
+                    <option value="">请选择省</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="cityid" id="cityid" lay-filter="cityid">
+                    <option value="">请选择市</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="areaid" id="areaid" lay-filter="areaid">
+                    <option value="">请选择县/区</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">车型：</label>
+            <div class="layui-input-block">
+                <input type="radio" name="carType" value="货车" title="货车">
+                <input type="radio" name="carType" value="轿车" title="轿车" checked>
+                <input type="radio" name="carType" value="SUV" title="SUV">
+                <input type="radio" name="carType" value="跑车" title="跑车">
+                <input type="radio" name="carType" value="皮卡" title="皮卡">
+                <input type="radio" name="carType" value="客车" title="客车">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">附件：</label>
+            <div class="layui-input-block">
+                <textarea id="demo" lay-verify="details" name="details" style="display: none;"></textarea>
+                <!--<textarea id="details"  style="display: none;"></textarea>-->
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="tijiao" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    var form;
+    $.ajax({
+        type: "get",
+        url: "http://127.0.0.1:8083/cases/getType",
+        async: true,
+        withCredentials: true,
+        crossDomain: true,
+        xhrFields: {
+            withCredentials: true
+        },	//前端适配：允许session跨域
+        dataType: "json",
+        success: function (result) {
+            if (result.type == 0 || result.type == 5 || result.type == 8) {
+
+            } else {
+                alert("您已提交报案信息！请查看进度");
+                $('#form').css('display', 'none');
+                $('#font').css('display', '');
+
+            }
+        }
+    })
+    var build;
+    layui.use('layedit', function () {
+        var layedit = layui.layedit;
+        layedit.set({
+            uploadImage: {
+                url: 'http://127.0.0.1:8083/ftpuploadimg' //接口url
+                , type: '' //默认post
+            }
+        });
+        build = layedit.build('demo', {
+            height: 500 //设置编辑器高度
+        }); //建立编辑器
+    });
+
+    $('#tijiao').click(function () {
+        layui.layedit.sync(build);
+        form.verify({
+            details: function (value) {
+                layui.layedit.sync(build);
+            }
+        });
+        var Details = layui.layedit.getContent(build).toString();
+        $('#demo').val(Details);
+        console.log(Details);
+        var areaid = $('#areaid').val();
+        var userName = $('input[name="userName"]').val();
+        var userPhone = $('input[name="userPhone"]').val();
+        var carType = $('input[name="carType"]').val();
+        var details = $('#demo').val();
+        var accidentTime = $('input[name="accidentTime"]').val();
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8083/cases/insert",
+            data: {
+                accidentTime: accidentTime,
+                areaid: areaid,
+                userName: userName,
+                userPhone: userPhone,
+                carType: carType,
+                details: details
+            },
+            // data: formdata,
+            async: true,
+            withCredentials: true,
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            },	//前端适配：允许session跨域
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+            }
+        });
+        location.reload();
+    })
+    layui.use('form', function () {
+        form = layui.form;
+        // //监听提交
+        // form.on('submit(formDemo)', function (data) {
+        //     // var Details = layui.layedit.getContent(build).toString();
+        //     // $('#details').val(Details);
+        //     // console.log(Details);
+        //     layui.layedit.sync(build);
+        //     form.verify({
+        //         details: function(value){
+        //             layui.layedit.sync(build);
+        //         }
+        //     });
+        //     $.ajax({
+        //         type: "get",
+        //         url: "http://127.0.0.1:8083/cases/insert",
+        //         data: data.field,
+        //         async: true,
+        //         withCredentials: true,
+        //         crossDomain: true,
+        //         xhrFields: {
+        //             withCredentials: true
+        //         },	//前端适配：允许session跨域
+        //         dataType: "json",
+        //         success: function (result) {
+        //             console.log(result);
+        //         }
+        //     });
+        //     // location.reload();
+        //     return false;
+        // });
+    });
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+        });
+    });
+</script>
+</body>
+</html>

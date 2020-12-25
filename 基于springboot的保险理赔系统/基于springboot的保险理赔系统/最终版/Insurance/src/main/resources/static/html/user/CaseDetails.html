@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/jquery-3.4.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+<!--    <script src="../../layui/layui.all.js"></script>-->
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../js/data.js"></script>
+</head>
+<body>
+<form lay-filter="formTest" class="layui-form layui-form-pane" id="form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">报案人:</label>
+        <div class="layui-input-inline">
+            <input disabled  type="text" name="userName" required lay-verify="required" placeholder="请输入 "
+                   autocomplete="off" class="layui-input">
+        </div>
+<!--        <div class="layui-form-mid layui-word-aux">请填写真实姓名</div>-->
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话：</label>
+        <div class="layui-input-block">
+            <input disabled type="text" name="userPhone" required lay-verify="required" placeholder="请输入 " autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出险日期：</label>
+        <div class="layui-inline">
+            <input disabled type="text" name="accidentTime" class="layui-input" id="test1">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><a style="color: red">* </a>选择地区</label>
+        <div class="layui-input-inline">
+            <select  name="provid" id="provid" lay-filter="provid">
+                <option value="">请选择省</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="cityid" id="cityid" lay-filter="cityid">
+                <option value="">请选择市</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="areaid" id="areaid" lay-filter="areaid">
+                <option value="">请选择县/区</option>
+            </select>
+        </div>
+    </div>
+    <!--<div class="layui-form-item">
+        <label class="layui-form-label">车型：</label>
+        <div class="layui-input-block">
+            <input  type="radio" name="carType" value="货车" title="货车">
+            <input  type="radio" name="carType" value="轿车" title="轿车" checked>
+            <input  type="radio" name="carType" value="SUV" title="SUV">
+            <input  type="radio" name="carType" value="跑车" title="跑车">
+            <input  type="radio" name="carType" value="皮卡" title="皮卡">
+            <input  type="radio" name="carType" value="客车" title="客车">
+        </div>
+    </div>-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">车型：</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="carType" readonly>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">补充：</label>
+        <div class="layui-input-block">
+            <textarea id="demo" lay-verify="details" name="details" style="display: none;"></textarea>
+            <!--<textarea id="details"  style="display: none;"></textarea>-->
+            <span id="details"></span>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+<!--            <button class="layui-btn" type="button" id="tijiao" lay-submit lay-filter="formDemo">立即提交</button>-->
+<!--            <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+        </div>
+    </div>
+</form>
+
+<script>
+    var defaults = {
+        s1: 'provid',
+        s2: 'cityid',
+        s3: 'areaid',
+        v1: null,
+        v2: null,
+        v3: null
+    };
+    var $form;
+    var form;
+    var $;
+    layui.define(['jquery', 'form'], function () {
+        $ = layui.jquery;
+        form = layui.form;
+        $form = $('form');
+        treeSelect(defaults);
+    });
+    function treeSelect(config) {
+        config.v1 = config.v1 ? config.v1 : 110000;
+        config.v2 = config.v2 ? config.v2 : 110100;
+        config.v3 = config.v3 ? config.v3 : 110101;
+        $.each(threeSelectData, function (k, v) {
+            appendOptionTo($form.find('select[name=' + config.s1 + ']'), k, v.val, config.v1);
+        });
+        form.render();
+        cityEvent(config);
+        areaEvent(config);
+        form.on('select(' + config.s1 + ')', function (data) {
+            cityEvent(data);
+            form.on('select(' + config.s2 + ')', function (data) {
+                areaEvent(data);
+            });
+        });
+
+        function cityEvent(data) {
+            $form.find('select[name=' + config.s2 + ']').html("");
+            config.v1 = data.value ? data.value : config.v1;
+            $.each(threeSelectData, function (k, v) {
+                if (v.val == config.v1) {
+                    if (v.items) {
+                        $.each(v.items, function (kt, vt) {
+                            appendOptionTo($form.find('select[name=' + config.s2 + ']'), kt, vt.val, config.v2);
+                        });
+                    }
+                }
+            });
+            form.render();
+            config.v2 = $('select[name=' + config.s2 + ']').val();
+            areaEvent(config);
+        }
+        function areaEvent(data) {
+            $form.find('select[name=' + config.s3 + ']').html("");
+            config.v2 = data.value ? data.value : config.v2;
+            $.each(threeSelectData, function (k, v) {
+                if (v.val == config.v1) {
+                    if (v.items) {
+                        $.each(v.items, function (kt, vt) {
+                            if (vt.val == config.v2) {
+                                $.each(vt.items, function (ka, va) {
+                                    appendOptionTo($form.find('select[name=' + config.s3 + ']'), ka, va, config.v3);
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+            form.render();
+            form.on('select(' + config.s3 + ')', function (data) { });
+        }
+        function appendOptionTo($o, k, v, d) {
+            var $opt = $("<option>").text(k).val(v);
+            if (v == d) { $opt.attr("selected", "selected") }
+            $opt.appendTo($o);
+        }
+    }
+
+</script>
+
+<script>
+    var form;
+
+    var request = new Object();
+    request = GetRequest(); // GetRequest();
+    var id = request['id'];
+
+    //获取url中"?"符后的字串
+    function GetRequest() {
+        var url = location.search;
+        url = decodeURI(url);
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            var strs = str.split("&");
+
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    layui.use('form', function () {
+        form = layui.form;
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8083/cases/selectOne",
+            data:{id:id},
+            async: true,
+            withCredentials: true,
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            },	//前端适配：允许session跨域
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                var defaults2 = {
+                    s1: 'provid',
+                    s2: 'cityid',
+                    s3: 'areaid',
+                    v1: result.accidentAreaid.slice(0, 2) + "0000",
+                    v2: (result.accidentAreaid.slice(0, 4) + "00"),
+                    v3: result.accidentAreaid.slice(0, 6)
+                };
+                console.log(defaults2);
+                treeSelect(defaults2);
+                form.val("formTest",result);
+                $("#details").append(result.details)
+                form.render();
+            }
+        })
+    });
+
+</script>
+</body>
+</html>

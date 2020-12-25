@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/jquery-3.4.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+</head>
+<body style="background-color: #f2f2f2">
+<script>
+    $.ajax({
+        type: "get",
+        url: "http://127.0.0.1:8083/cases/getUnprocessed",
+        async: true,
+        withCredentials: true,
+        crossDomain: true,
+        xhrFields: {
+            withCredentials: true
+        },	//前端适配：允许session跨域
+        dataType: "json",
+        success: function (result) {
+            console.log(result);
+            var li = '';
+            for (var i = 0; i < result.length; i++) {
+                li += '<div class="layui-card" style="width: 80%;margin: auto;margin-top: 40px;">\n' +
+                    '    <div class="layui-card-header"   style="text-align: center;font-size: 22px">' +
+                    result[i].userName +
+                    '的' +
+                    result[i].carType + '案' +
+                    '</div>\n' +
+                    '    <div class="layui-card-body">\n' +
+                    '<a href="CaseDetails.html?id=' +
+                    result[i].id +
+                    '" type="button" class="layui-btn layui-btn-normal">查看案件</a>\n'
+                    +
+                        '<b style="float: right;color: red">出险日期：' +
+                    result[i].accidentTime + '</b>\n' +
+                    '        <br>\n' +
+                    '    </div>\n' +
+                    '</div>'
+            }
+            console.log(li);
+            $('#context').append(li)
+        }
+    })
+</script>
+<!--<div id="context">
+    <div class="layui-card" style="width: 80%;margin: auto;margin-top: 40px;">
+        <div class="layui-card-header" style="text-align: center;font-size: 22px">(一条演示数据) 张三的SUV</div>
+        <div class="layui-card-body">
+            <a href="CaseDetails.html?id=" type="button" class="layui-btn layui-btn-normal">查看案件</a>
+            <b style="float: right;color: red">出险日期：2020-2-17</b>
+            <br>
+        </div>
+    </div>
+</div>-->
+
+
+</body>
+</html>

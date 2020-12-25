@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../js/jquery-3.4.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+
+</head>
+<style>
+    .layui-form-radio {
+        color: #f8fff9;
+    }
+</style>
+<script>
+    $(function () {
+        //Demo
+        layui.use('form', function () {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                login(data);
+                return false;
+            });
+        });
+
+        function login(data) {
+            $.ajax({
+                type: "get",
+                url: "http://127.0.0.1:8083/admin/Login",
+                data: {name:data.field.name,password:data.field.password,admin:1},
+                async: true,
+                withCredentials: true,
+                crossDomain: true,
+                xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+                dataType: "json",
+                success: function (result) {
+                    console.log(result  );
+                    if (result.code==0) {
+                        location.href = "superUser.html";
+                    } else {
+                        layer.msg("密码错误，请重新输入");
+                    }
+
+                }
+            })
+        }
+    })
+</script>
+<body style="background-image: url('../../img/login-bg.jpg')">
+<div id="particles-js"></div>
+
+<div style="position:absolute;height: 400px;width: 30%;left:30%;top: 200px;">
+    <form class="layui-form " action="">
+        <p align="center" style="font-size: 28px;color:#9dc4ff;margin-bottom: 20px;margin-left: 20% ">登录</p>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="color:#9dc4ff"><b>用户名</b></label>
+            <div class="layui-input-block">
+                <input type="text" id="phone" name="name" required lay-verify="required" placeholder="请输入用户名" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="color:#9dc4ff"><b>密码：</b></label>
+            <div class="layui-input-block">
+                <input type="password" name="password" required lay-verify="required" placeholder="请输入密码"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="color:#9dc4ff"><b>身份:</b></label>
+            <div class="layui-input-block">
+                <!--<input type="radio" name="sex" value="1" title="投保人" checked>-->
+                <!--<input type="radio" name="sex" value="2" title="审核人" >-->
+                <!--<input type="radio" name="sex" value="3" title="委员会" >-->
+                <input type="radio" name="sex" value="4" title="管理员" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-submit lay-filter="formDemo">立即登录</button>
+
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+<!--一个好看的动画背景-->
+<script src="../../js/particles.js"></script>
+<script src="../../js/app.js"></script>
+
+</body>
+</html>

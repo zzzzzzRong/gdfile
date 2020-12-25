@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.insurance.demo.dao.LossDao">
+
+    <resultMap type="com.insurance.demo.entity.Loss" id="LossMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="casesId" column="cases_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="accidentType" column="accident_type" jdbcType="VARCHAR"/>
+        <result property="accidentLiability" column="accident_liability" jdbcType="VARCHAR"/>
+        <result property="accidentLiabilityProportion" column="accident_liability_proportion" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="surveyTime" column="survey_time" jdbcType="VARCHAR"/>
+        <result property="surveyLocation" column="survey_location" jdbcType="VARCHAR"/>
+        <result property="medicalPrice" column="medical_price" jdbcType="NUMERIC"/>
+        <result property="repairPrice" column="repair_price" jdbcType="VARCHAR"/>
+        <result property="rescuePrice" column="rescue_price" jdbcType="VARCHAR"/>
+        <result property="propertyInsurance" column="property_insurance" jdbcType="VARCHAR"/>
+        <result property="liabilityInsurance" column="liability_insurance" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="LossMap">
+        select
+          id, cases_id, user_id, accident_type, accident_liability, accident_liability_proportion, user_name, survey_time, survey_location, medical_price, repair_price, rescue_price, property_insurance, liability_insurance
+        from insurance.loss
+        where id = #{id}
+    </select>
+    <!--查询单个-->
+    <select id="selectOneByUserid" resultMap="LossMap">
+        select
+          id, cases_id, user_id, accident_type, accident_liability, accident_liability_proportion, user_name, survey_time, survey_location, medical_price, repair_price, rescue_price, property_insurance, liability_insurance
+        from insurance.loss
+        where user_id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="LossMap">
+        select
+          id, cases_id, user_id, accident_type, accident_liability, accident_liability_proportion, user_name, survey_time, survey_location, medical_price, repair_price, rescue_price, property_insurance, liability_insurance
+        from insurance.loss
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="LossMap">
+        select
+          id, cases_id, user_id, accident_type, accident_liability, accident_liability_proportion, user_name, survey_time, survey_location, medical_price, repair_price, rescue_price, property_insurance, liability_insurance
+        from insurance.loss
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="casesId != null">
+                and cases_id = #{casesId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="accidentType != null and accidentType != ''">
+                and accident_type = #{accidentType}
+            </if>
+            <if test="accidentLiability != null and accidentLiability != ''">
+                and accident_liability = #{accidentLiability}
+            </if>
+            <if test="accidentLiabilityProportion != null and accidentLiabilityProportion != ''">
+                and accident_liability_proportion = #{accidentLiabilityProportion}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="surveyTime != null and surveyTime != ''">
+                and survey_time = #{surveyTime}
+            </if>
+            <if test="surveyLocation != null and surveyLocation != ''">
+                and survey_location = #{surveyLocation}
+            </if>
+            <if test="medicalPrice != null">
+                and medical_price = #{medicalPrice}
+            </if>
+            <if test="repairPrice != null and repairPrice != ''">
+                and repair_price = #{repairPrice}
+            </if>
+            <if test="rescuePrice != null and rescuePrice != ''">
+                and rescue_price = #{rescuePrice}
+            </if>
+            <if test="propertyInsurance != null and propertyInsurance != ''">
+                and property_insurance = #{propertyInsurance}
+            </if>
+            <if test="liabilityInsurance != null and liabilityInsurance != ''">
+                and liability_insurance = #{liabilityInsurance}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into insurance.loss(cases_id, user_id, accident_type, accident_liability, accident_liability_proportion, user_name, survey_time, survey_location, medical_price, repair_price, rescue_price, property_insurance, liability_insurance)
+        values (#{casesId}, #{userId}, #{accidentType}, #{accidentLiability}, #{accidentLiabilityProportion}, #{userName}, #{surveyTime}, #{surveyLocation}, #{medicalPrice}, #{repairPrice}, #{rescuePrice}, #{propertyInsurance}, #{liabilityInsurance})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update insurance.loss
+        <set>
+            <if test="casesId != null">
+                cases_id = #{casesId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="accidentType != null and accidentType != ''">
+                accident_type = #{accidentType},
+            </if>
+            <if test="accidentLiability != null and accidentLiability != ''">
+                accident_liability = #{accidentLiability},
+            </if>
+            <if test="accidentLiabilityProportion != null and accidentLiabilityProportion != ''">
+                accident_liability_proportion = #{accidentLiabilityProportion},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="surveyTime != null and surveyTime != ''">
+                survey_time = #{surveyTime},
+            </if>
+            <if test="surveyLocation != null and surveyLocation != ''">
+                survey_location = #{surveyLocation},
+            </if>
+            <if test="medicalPrice != null">
+                medical_price = #{medicalPrice},
+            </if>
+            <if test="repairPrice != null and repairPrice != ''">
+                repair_price = #{repairPrice},
+            </if>
+            <if test="rescuePrice != null and rescuePrice != ''">
+                rescue_price = #{rescuePrice},
+            </if>
+            <if test="propertyInsurance != null and propertyInsurance != ''">
+                property_insurance = #{propertyInsurance},
+            </if>
+            <if test="liabilityInsurance != null and liabilityInsurance != ''">
+                liability_insurance = #{liabilityInsurance},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from insurance.loss where id = #{id}
+    </delete>
+
+</mapper>

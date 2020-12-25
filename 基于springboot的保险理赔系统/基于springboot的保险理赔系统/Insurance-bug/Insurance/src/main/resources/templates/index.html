@@ -1,0 +1,157 @@
+<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="zh-cmn">
+<head><title>登录流萤保险理赔</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="save" content="history"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb18030"/>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="layui/layui.js"></script>
+    <link rel="stylesheet" href="css/loginpage4bb408.css">
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+
+<script>
+    //Demo
+    layui.use('form', function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            console.log();
+            //
+            if ($("input[type='radio']:checked").val() == 1) {
+                $.ajax({
+                    type: "get",
+                    url: "http://127.0.0.1:8083/user/Login",
+                    data: {name: data.field.name, password: data.field.password},
+                    async: true,
+                    withCredentials: true,
+                    crossDomain: true,
+                    xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        if (result.code == 0) {
+                            location.href = './html/user/index.html'
+                        } else {
+                            layer.msg("密码错误，请重新输入");
+                        }
+
+                    }
+                })
+            } else {
+                $.ajax({
+                    type: "get",
+                    url: "http://127.0.0.1:8083/admin/Login",
+                    data: {name: data.field.name, password: data.field.password, admin: data.field.admin},
+                    async: true,
+                    withCredentials: true,
+                    crossDomain: true,
+                    xhrFields: {withCredentials: true},	//前端适配：允许session跨域
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        if (result.code == 404) {
+                            layer.alert("密码错误，请重新输入");
+                        } else if (result.data.admin == 2) {
+                            location.href = './html/committee/index.html'
+                        } else if (result.data.admin == 3) {
+                            location.href = './html/Review/index.html'
+
+                        }
+
+                    }
+                })
+            }
+            return false;
+        });
+    });
+</script>
+<body>
+<div class="container">
+    <div class="header"><a class="header_logo" href="#">流萤保险理赔</a>
+        <!--<div class="header_link"><a href="#">基本版</a>&nbsp;|&nbsp;<a-->
+        <!--href="#">English</a>&nbsp;|&nbsp;<a href="#" target="_blank">手机版</a>&nbsp;|&nbsp;<a-->
+        <!--href="#" target="_blank">企业邮箱</a></div>-->
+    </div>
+    <div class="content">
+        <div id="downError" class="login_msg" style="display:none;"><p><span class="login_msg_warning"></span>由于加载安全组件失败，为了您的帐号安全，无法正常登录邮箱，解决方法：
+        </p>
+            <ul>
+                <li>按下F5重新刷新页面。</li>
+                <li>打开浏览器“选项”菜单，选择“Internet选项”，执行清空缓存功能，确定后按F5刷新本页面。</li>
+                <li>如上述方式仍然无法解决问题，请登录<a href="#" target="_blank">邮箱论坛通知我们</a>，我们将尽快为您解决。</li>
+            </ul>
+        </div>
+        <div class="content_wrapper">
+            <div class="xm_login_container login_container" id="login">
+                <div class="xm_login_card">
+                    <div class="xm_login_card_tab">
+                        <div class="xm_login_card_tab_item" id="wxLoginTab">登录</div>
+                    </div>
+                    <div class="xm_login_card_cnt">
+                        <form class="layui-form " action="" style="margin-top: 20px;margin-left: -20px">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="color:#9dc4ff"><b>用户名</b></label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="name" name="name" required lay-verify="required"
+                                           placeholder="请输入用户名" autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="color:#9dc4ff"><b>密码：</b></label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="password" required lay-verify="required"
+                                           placeholder="请输入密码"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="color:#9dc4ff"><b>身份:</b></label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="admin" value="1" title="投保人" checked>
+                                    <input type="radio" name="admin" value="3" title="定损人员">
+                                </div>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="admin" value="2" title="委员会成员">
+                                    <!--<input type="radio" name="sex" value="4" title="管理员">-->
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn" lay-submit lay-filter="formDemo">立即提交
+                                    </button>
+
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <div class="login_box second_login_box" style="display:none;">
+                    <div class="login_box_header"><h1 class="login_box_title">登录流萤保险理赔</h1></div>
+                </div>
+            </div>
+            <div class="login_pictures">
+                <div class="login_pictures_picture"
+                     style="background-image:url('images/tg-silence1e9c5d.jpg');background-position:right 40px;"></div>
+                <div class="login_pictures_txt"><p class="login_pictures_title">欢迎来到流萤保险理赔 </p>
+                    <p>到头来，</p>
+                    <p>我们记住的，</p>
+                    <p>不是敌人的攻击，</p>
+                    <p>而是朋友的沉默。</p>
+                    <p>——马丁&middot;路德&middot;金</p>
+                    <p class="login_pictures_info">插画来自丑丑(两岁)</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer"><a href="./html/admin/index.html" target="_blank">管理员登录</a>&nbsp;|&nbsp;
+        <span class="gray">&copy;2020如果您有任何疑问请发邮件至1350957463@qq.com</span>
+    </div>
+</div>
+</body>
+</html>

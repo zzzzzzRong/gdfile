@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <script src="../../js/jquery-3.4.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <script src="../../js/data.js"></script>
+    <script src="../../js/province.js"></script>
+
+</head>
+<body style="overflow-x:hidden;overflow-y:scroll">
+
+<div style="width: 80%;margin: auto">
+    <table class="layui-hide" id="news" lay-data="{id: 'idTest'}" lay-filter="news"></table>
+</div>
+
+<form lay-filter="form" style="width: 80%;margin-left: auto;margin-right: auto" class="layui-form layui-form-pane"
+      id="form" action="">
+    <h1 align="center" style="margin: auto;">案件信息</h1>
+    <input type="text" id="id" name="id" style="display: none">
+    <div class="layui-form-item">
+        <label class="layui-form-label">报案人:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="userName" required lay-verify="required" placeholder="请输入 "
+                   autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">请填写真实姓名</div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">定损员姓名:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="reviewName" required lay-verify="required" placeholder="请输入 "
+                   autocomplete="off" class="layui-input">
+        </div>
+<!--        <div class="layui-form-mid layui-word-aux">请填写真实姓名</div>-->
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话：</label>
+        <div class="layui-input-block">
+            <input type="text" name="userPhone" required lay-verify="required" placeholder="请输入 " autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出险日期：</label>
+        <div class="layui-inline">
+            <input type="text" name="accidentTime" class="layui-input" id="test1">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><a style="color: red">* </a>选择地区</label>
+        <div class="layui-input-inline">
+            <select name="provid" id="provid" lay-filter="provid">
+                <option value="">请选择省</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="cityid" id="cityid" lay-filter="cityid">
+                <option value="">请选择市</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="areaid" id="areaid" lay-filter="areaid">
+                <option value="">请选择县/区</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">车型：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="carType" value="货车" title="货车">
+            <input type="radio" name="carType" value="轿车" title="轿车" checked>
+            <input type="radio" name="carType" value="SUV" title="SUV">
+            <input type="radio" name="carType" value="跑车" title="跑车">
+            <input type="radio" name="carType" value="皮卡" title="皮卡">
+            <input type="radio" name="carType" value="客车" title="客车">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">补充：</label>
+        <div class="layui-input-block">
+            <textarea id="demo" lay-verify="details" name="details" style="display: none;"></textarea>
+            <!--<textarea id="details"  style="display: none;"></textarea>-->
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" type="button" id="tijiao" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn  layui-btn-xs" lay-event="edit">查看/编辑</a>
+    <a class="layui-btn  layui-btn-xs layui-btn-danger" lay-event="del">删除案件</a>
+</script>
+<script>
+    //时间输入
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+        });
+    })
+    //获取url中"?"符后的字串
+    function GetRequest() {
+        var url = location.search;
+        url = decodeURI(url);
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            var strs = str.split("&");
+
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    layui.use(['table','layedit'], function () {
+        var layedit = layui.layedit;
+        layedit.set({
+            uploadImage: {
+                url: 'http://127.0.0.1:8083/ftpuploadimg' //接口url
+                , type: '' //默认post
+            }
+        });
+        build = layedit.build('demo', {
+            height: 500 //设置编辑器高度
+        }); //建立编辑器
+        var table = layui.table;
+        // var laydate = layui.laydate;
+        var tableIns = table.render({
+            elem: '#news'
+            , url: 'http://127.0.0.1:8083/admin/queryType2'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }]
+            , title: '列表'
+            , cols: [[
+                {field: 'userName', title: '姓名', sort: true}
+                , {field: 'carType', title: '车型', sort: true}
+                , {field: 'accidentTime', title: '出险日期', sort: true}
+                // , {
+                //     field: 'accidentTime',
+                //     title: '出险日期',
+                //     templet: '<div>{{ layui.laytpl.toDateString(d.starttimeDrug) }}</div>',
+                //     sort: true
+                // }
+                , {
+                    field: 'occurTime',
+                    title: '用户报案日期',
+                    templet: '<div>{{ layui.laytpl.toDateString(d.dateRecording) }}</div>',
+                    sort: true
+                }
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 240}
+            ]]
+            , page: true
+            , id: "testReload"
+        });
+        //时间戳的处理
+        layui.laytpl.toDateString = function (d, format) {
+            var date = new Date(d || new Date())
+                , ymd = [
+                this.digit(date.getFullYear(), 4)
+                , this.digit(date.getMonth() + 1)
+                , this.digit(date.getDate())
+            ]
+                , hms = [
+                this.digit(date.getHours())
+                , this.digit(date.getMinutes())
+                , this.digit(date.getSeconds())
+            ];
+
+            format = format || 'yyyy-MM-dd  ';
+
+            return format.replace(/yyyy/g, ymd[0])
+                .replace(/MM/g, ymd[1])
+                .replace(/dd/g, ymd[2])
+                .replace(/HH/g, hms[0]);
+        };
+        //数字前置补零
+        layui.laytpl.digit = function (num, length, end) {
+            var str = '';
+            num = String(num);
+            length = length || 2;
+            for (var i = num.length; i < length; i++) {
+                str += '0';
+            }
+            return num < Math.pow(10, length) ? str + (num | 0) : num;
+        };
+        //头工具栏事件
+        table.on('toolbar(news)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：' + data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+            ;
+        });
+        //监听行工具事件
+        table.on('tool(news)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                del(data.id);
+            } else if (obj.event === 'edit') {
+                $.ajax({
+                    type: "get",
+                    url: "http://127.0.0.1:8083/cases/selectOne",
+                    data: "id=" + data.id,
+                    async: true,
+                    dataType: "json",
+                    success: function (result) {
+                        var form = layui.form;
+                        var defaults2 = {
+                            s1: 'provid',
+                            s2: 'cityid',
+                            s3: 'areaid',
+                            v1: result.accidentAreaid.slice(0, 2) + "0000",
+                            v2: (result.accidentAreaid.slice(0, 4) + "00"),
+                            v3: result.accidentAreaid.slice(0, 6)
+                        };
+                        treeSelect(defaults2);
+                        console.log(result);
+                        form.val("form", result);
+                        id = result.id;
+                        layedit.setContent(build,result.details);
+                        $('#details').append(result.details)
+                    }
+                })
+
+
+            }
+        });
+    });
+    var build;
+    function del(id) {
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8083/cases/deleteById",
+            data: "id=" + id,
+            async: true,
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                // article(result);
+            }
+        })
+        location.reload();
+    }
+
+
+    $('#tijiao').click(function () {
+        layui.layedit.sync(build);
+        form.verify({
+            details: function (value) {
+                layui.layedit.sync(build);
+            }
+        });
+        var Details = layui.layedit.getContent(build).toString();
+        $('#demo').val(Details);
+        console.log(Details);
+
+        var id = $('#id').val();
+        var areaid = $('#areaid').val();
+        var userName = $('input[name="userName"]').val();
+        var reviewName = $('input[name="reviewName"]').val();
+        var userPhone = $('input[name="userPhone"]').val();
+        var carType = $('input[name="carType"]').val();
+        var details = $('#demo').val();
+        var accidentTime = $('input[name="accidentTime"]').val();
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8083/cases/update",
+            data: {
+                id:id,
+                accidentTime: accidentTime,
+                reviewName: reviewName,
+                areaid: areaid,
+                userName: userName,
+                userPhone: userPhone,
+                carType: carType,
+                details: details
+            },
+            // data: formdata,
+            async: true,
+            withCredentials: true,
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            },	//前端适配：允许session跨域
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+            }
+        });
+        location.reload();
+    })
+</script>
+
+</body>
+</html>
